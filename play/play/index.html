@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>test</title>
+		<link rel="stylesheet" type="text/css" href="css/bootstrap.css"/>
+	</head>
+	<body>
+		<div class="container" style="margin-top: 20px;">
+			<div style="width: 50%;margin: 0 auto;">
+				<div class="input-group" style="position: relative;">
+				   <input type="text" class="form-control" placeholder="说点什么哇,我会念给你听" aria-describedby="basic-addon2" id="inputs">
+				   <span class="input-group-addon" id="basic-addon2" >ok</span>
+				   <ul class="dropdown-menu" aria-labelledby="dropdownMenu1" style="display: none;width: 100%;" id="tips">
+				   </ul>
+				</div>
+			</div>
+			
+		</div>
+		<script src="js/jquery.min.js"></script>
+		<script>
+			 function speckText(str){
+		        var url = "http://tts.baidu.com/text2audio?lan=zh&ie=UTF-8&text=" + encodeURI(str);        // baidu
+		        　　var n = new Audio(url);
+		
+		       　　 n.src = url;
+		
+		       　　 n.play();
+		    }
+			$('#basic-addon2').click(function subimt(){
+				var vals=$("#inputs").val().trim();
+				speckText(vals);
+				var tmparr=[];
+				if(vals==''){
+					return;
+				}
+				if(localStorage.getItem('gh_test_names')){
+					tmparr=localStorage.getItem('gh_test_names').split(',');
+					var len=tmparr.length;
+					if(!contains(tmparr,vals)){
+						tmparr.push(vals)
+					}
+					vals=tmparr.join(',');
+				}
+				localStorage.setItem("gh_test_names",vals);
+				$('#tips').hide();
+				
+			})
+			//fuzhi
+			$('#inputs').focus(function(){
+				$('#tips').html('');
+				if(!localStorage.getItem('gh_test_names')){
+					return;
+				}
+				$('#tips').show();
+				var fzhi=localStorage.getItem('gh_test_names').split(',');
+				var tipsStr='';
+				for(var i=0;i<fzhi.length;i++){
+					tipsStr+='<li><a href="javascript:;">'+fzhi[i]+'</a></li>';
+				}
+				$('#tips').append(tipsStr)
+			})
+			//
+			$('#tips').delegate('a','click',function(){
+				let str=$(this).text();
+				$('#tips').hide();
+				$("#inputs").val($(this).text());
+				speckText(str);
+			})
+			//判断某元素在数组中是否存在
+			function contains(arr, obj) {  
+				var i = arr.length;  
+				while (i--) {  
+					if (arr[i] === obj) {  
+						return true;  
+					}
+				}
+			}
+		</script>
+	</body>
+</html>
